@@ -1,38 +1,31 @@
-import 'package:basic_todo_app/model/todo_model.dart';
+import 'package:basic_todo_app/providers/todo_provider.dart';
 import 'package:basic_todo_app/widgets/float_ac_button_widget.dart';
 import 'package:basic_todo_app/widgets/listview_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MainPage extends StatefulWidget {
+class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  ConsumerState<MainPage> createState() => _MainPageState();
 }
 
-List<TodoModel> _todoList = [];
 final TextEditingController _textEditingController = TextEditingController();
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends ConsumerState<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatAcButtonWidget(
         textEditingController: _textEditingController,
         addTodo: () {
-          addTodo(_textEditingController);
+          ref.read(todoProvider.notifier).addTodo(_textEditingController.text);
+          _textEditingController.clear();
           Navigator.of(context).pop();
         },
       ),
-      body: ListViewWidget(todoList: _todoList),
+      body: ListViewWidget(),
     );
-  }
-
-  void addTodo(TextEditingController textEditingController) {
-    setState(() {});
-    _todoList.add(TodoModel(Uuid().v4(), name: textEditingController.text));
-    textEditingController.clear();
-    debugPrint("Eklenen veri ile birlikte todo :$_todoList");
   }
 }

@@ -1,28 +1,30 @@
-import 'package:basic_todo_app/model/todo_model.dart';
+import 'package:basic_todo_app/providers/todo_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ListViewWidget extends StatefulWidget {
-  final List<TodoModel> todoList;
-  const ListViewWidget({super.key, required this.todoList});
+class ListViewWidget extends ConsumerStatefulWidget {
+  const ListViewWidget({super.key});
 
   @override
-  State<ListViewWidget> createState() => _ListViewWidgetState();
+  ConsumerState<ListViewWidget> createState() => _ListViewWidgetState();
 }
 
 final TextEditingController _textEditingController = TextEditingController();
 
-class _ListViewWidgetState extends State<ListViewWidget> {
+class _ListViewWidgetState extends ConsumerState<ListViewWidget> {
   @override
   Widget build(BuildContext context) {
+    final todoProviderList = ref.watch(todoProvider);
+    final todoProviderUD = ref.read(todoProvider.notifier);
     return ListView.builder(
-      itemCount: widget.todoList.length,
+      itemCount: todoProviderList.length,
       itemBuilder: (context, index) {
-        final currentTodo = widget.todoList[index];
+        final currentTodo = todoProviderList[index];
         return Dismissible(
           direction: DismissDirection.startToEnd,
-          key: GlobalKey(debugLabel: currentTodo.id),
-          onDismissed: (direction) {
-            deleteTodo(index);
+          key: ValueKey(currentTodo.id),
+          onDismissed: (_) {
+            todoProviderUD.deleteTodo(currentTodo.id);
           },
           child: Container(
             decoration: BoxDecoration(
@@ -32,6 +34,7 @@ class _ListViewWidgetState extends State<ListViewWidget> {
             margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
             child: GestureDetector(
               onTap: () {
+                _textEditingController.text = currentTodo.name;
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -43,9 +46,9 @@ class _ListViewWidgetState extends State<ListViewWidget> {
                           onPressed: () {
                             setState(() {
                               //* toto ekleme
-                              updateTodo(
+                              todoProviderUD.updateTodo(
                                 currentTodo.id,
-                                _textEditingController,
+                                _textEditingController.text,
                               );
                               //* Dialogu Kapatma
                               Navigator.of(context).pop();
@@ -68,20 +71,5 @@ class _ListViewWidgetState extends State<ListViewWidget> {
         );
       },
     );
-  }
-
-  void deleteTodo(int index) {
-    setState(() {});
-    widget.todoList.removeAt(index);
-  }
-
-  void updateTodo(String id, TextEditingController textEditingController) {
-    setState(() {});
-    final index = widget.todoList.indexWhere((t) => t.id == id);
-    if (index == -1) return;
-    widget.todoList[index] = widget.todoList[index].copyWith(
-      name: textEditingController.text.trim(),
-    );
-    textEditingController.clear();
   }
 }

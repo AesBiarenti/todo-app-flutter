@@ -20,7 +20,7 @@ class FloatAcButtonWidget extends StatelessWidget {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("Add Todo"),
+              title: Text("Todo"),
               content: TextField(controller: textEditingController),
               actions: [
                 ElevatedButton(
