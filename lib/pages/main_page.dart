@@ -1,4 +1,6 @@
 import 'package:basic_todo_app/model/todo_model.dart';
+import 'package:basic_todo_app/widgets/float_ac_button_widget.dart';
+import 'package:basic_todo_app/widgets/listview_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,106 +18,21 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.grey.shade900,
-        child: Icon(Icons.add, color: Colors.deepPurple, size: 40),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text("Add Todo"),
-                content: TextField(controller: _textEditingController),
-                actions: [
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        //* toto ekleme
-                        addTodo(_textEditingController);
-
-                        //* Dialogu Kapatma
-                        Navigator.of(context).pop();
-                      });
-                    },
-                    child: Text("Kaydet"),
-                  ),
-                ],
-              );
-            },
-          );
+      floatingActionButton: FloatAcButtonWidget(
+        textEditingController: _textEditingController,
+        addTodo: () {
+          addTodo(_textEditingController);
+          Navigator.of(context).pop();
         },
       ),
-      body: ListView.builder(
-        itemCount: _todoList.length,
-        itemBuilder: (context, index) {
-          final currentTodo = _todoList[index];
-          return Container(
-            margin: EdgeInsets.symmetric(vertical: 4),
-            color: Colors.deepPurple,
-            child: Dismissible(
-              key: GlobalKey(debugLabel: currentTodo.id),
-              onDismissed: (direction) {
-                setState(() {
-                  deleteTodo(index);
-                });
-              },
-              child: GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Add Todo"),
-                        content: TextField(controller: _textEditingController),
-                        actions: [
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                //* toto ekleme
-                                updateTodo(
-                                  currentTodo.id,
-                                  _textEditingController,
-                                );
-                                //* Dialogu Kapatma
-                                Navigator.of(context).pop();
-                              });
-                            },
-                            child: Text("Kaydet"),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: ListTile(
-                  leading: Text("$index"),
-                  title: Text(currentTodo.name),
-                  subtitle: Text(currentTodo.id),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+      body: ListViewWidget(todoList: _todoList),
     );
   }
-}
 
-void addTodo(TextEditingController textEditingController) {
-  _todoList.add(TodoModel(Uuid().v4(), name: textEditingController.text));
-  textEditingController.clear();
-  debugPrint("Eklenen veri ile birlikte todo :$_todoList");
-}
-
-void deleteTodo(int index) {
-  _todoList.removeAt(index);
-}
-
-void updateTodo(String id, TextEditingController textEditingController) {
-  final index = _todoList.indexWhere((t) => t.id == id);
-  if (index == -1) return;
-  _todoList[index] = _todoList[index].copyWith(
-    name: textEditingController.text.trim(),
-  );
-  textEditingController.clear();
+  void addTodo(TextEditingController textEditingController) {
+    setState(() {});
+    _todoList.add(TodoModel(Uuid().v4(), name: textEditingController.text));
+    textEditingController.clear();
+    debugPrint("Eklenen veri ile birlikte todo :$_todoList");
+  }
 }
