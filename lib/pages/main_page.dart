@@ -32,6 +32,7 @@ class _MainPageState extends State<MainPage> {
                       setState(() {
                         //* toto ekleme
                         addTodo(_textEditingController);
+
                         //* Dialogu Kapatma
                         Navigator.of(context).pop();
                       });
@@ -51,10 +52,47 @@ class _MainPageState extends State<MainPage> {
           return Container(
             margin: EdgeInsets.symmetric(vertical: 4),
             color: Colors.deepPurple,
-            child: ListTile(
-              leading: Text("$index"),
-              title: Text(currentTodo.name),
-              subtitle: Text(currentTodo.id),
+            child: Dismissible(
+              key: GlobalKey(debugLabel: currentTodo.id),
+              onDismissed: (direction) {
+                setState(() {
+                  deleteTodo(index);
+                });
+              },
+              child: GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text("Add Todo"),
+                        content: TextField(controller: _textEditingController),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                //* toto ekleme
+                                updateTodo(
+                                  currentTodo.id,
+                                  _textEditingController,
+                                );
+                                //* Dialogu Kapatma
+                                Navigator.of(context).pop();
+                              });
+                            },
+                            child: Text("Kaydet"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: ListTile(
+                  leading: Text("$index"),
+                  title: Text(currentTodo.name),
+                  subtitle: Text(currentTodo.id),
+                ),
+              ),
             ),
           );
         },
@@ -64,6 +102,20 @@ class _MainPageState extends State<MainPage> {
 }
 
 void addTodo(TextEditingController textEditingController) {
-  _todoList.add(TodoModel(id: Uuid().v4(), name: textEditingController.text));
+  _todoList.add(TodoModel(Uuid().v4(), name: textEditingController.text));
+  textEditingController.clear();
   debugPrint("Eklenen veri ile birlikte todo :$_todoList");
+}
+
+void deleteTodo(int index) {
+  _todoList.removeAt(index);
+}
+
+void updateTodo(String id, TextEditingController textEditingController) {
+  final index = _todoList.indexWhere((t) => t.id == id);
+  if (index == -1) return;
+  _todoList[index] = _todoList[index].copyWith(
+    name: textEditingController.text.trim(),
+  );
+  textEditingController.clear();
 }
