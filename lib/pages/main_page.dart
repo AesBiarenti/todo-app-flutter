@@ -52,7 +52,7 @@ class _MainPageState extends State<MainPage> {
             margin: EdgeInsets.symmetric(vertical: 4),
             color: Colors.deepPurple,
             child: ListTile(
-              leading: Text(index.toString()),
+              leading: Text("$index"),
               title: Text(currentTodo.name),
               subtitle: Text(currentTodo.id),
             ),
