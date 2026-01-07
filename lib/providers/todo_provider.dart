@@ -1,6 +1,7 @@
 import 'package:basic_todo_app/model/todo_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
+
 import 'package:uuid/uuid.dart';
 
 final todoProvider = StateNotifierProvider<TodoProvider, List<TodoModel>>(

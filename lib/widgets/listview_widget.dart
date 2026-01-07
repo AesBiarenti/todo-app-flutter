@@ -1,73 +1,32 @@
 import 'package:basic_todo_app/providers/todo_provider.dart';
+import 'package:basic_todo_app/widgets/todo_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ListViewWidget extends ConsumerStatefulWidget {
+class ListViewWidget extends ConsumerWidget {
   const ListViewWidget({super.key});
 
   @override
-  ConsumerState<ListViewWidget> createState() => _ListViewWidgetState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    
+    final todos = ref.watch(todoProvider);
+    final todoNotifier = ref.read(todoProvider.notifier);
 
-final TextEditingController _textEditingController = TextEditingController();
+    if (todos.isEmpty) {
+      return const Center(
+        child: Text("Henüz todo yok"),
+      );
+    }
 
-class _ListViewWidgetState extends ConsumerState<ListViewWidget> {
-  @override
-  Widget build(BuildContext context) {
-    final todoProviderList = ref.watch(todoProvider);
-    final todoProviderUD = ref.read(todoProvider.notifier);
     return ListView.builder(
-      itemCount: todoProviderList.length,
+      itemCount: todos.length,
       itemBuilder: (context, index) {
-        final currentTodo = todoProviderList[index];
-        return Dismissible(
-          direction: DismissDirection.startToEnd,
-          key: ValueKey(currentTodo.id),
-          onDismissed: (_) {
-            todoProviderUD.deleteTodo(currentTodo.id);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.deepPurple,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            child: GestureDetector(
-              onTap: () {
-                _textEditingController.text = currentTodo.name;
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text("Add Todo"),
-                      content: TextField(controller: _textEditingController),
-                      actions: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              //* toto ekleme
-                              todoProviderUD.updateTodo(
-                                currentTodo.id,
-                                _textEditingController.text,
-                              );
-                              //* Dialogu Kapatma
-                              Navigator.of(context).pop();
-                            });
-                          },
-                          child: Text("Kaydet"),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: ListTile(
-                leading: Text("$index"),
-                title: Text(currentTodo.name),
-                subtitle: Text(currentTodo.id),
-              ),
-            ),
-          ),
+        final todo = todos[index];
+        return TodoItemWidget(
+          currentTodo: todo,
+          index: index,
+          onDelete: () => todoNotifier.deleteTodo(todo.id),
+          onUpdate: (newName) => todoNotifier.updateTodo(todo.id, newName),
         );
       },
     );
