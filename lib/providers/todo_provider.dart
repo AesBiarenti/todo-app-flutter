@@ -1,7 +1,7 @@
 import 'package:basic_todo_app/constants/enum.dart';
-
+import 'package:basic_todo_app/core/models/todo_state.dart';
 import 'package:basic_todo_app/model/todo_model.dart';
-import 'package:basic_todo_app/model/todo_state.dart';
+
 import 'package:basic_todo_app/repository/todo_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';

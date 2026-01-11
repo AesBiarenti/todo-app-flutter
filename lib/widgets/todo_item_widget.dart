@@ -1,5 +1,5 @@
 import 'package:basic_todo_app/constants/app_colors.dart';
-import 'package:basic_todo_app/constants/app_strings.dart';
+import 'package:basic_todo_app/core/services/dialog_service.dart';
 import 'package:basic_todo_app/model/todo_model.dart';
 import 'package:basic_todo_app/providers/todo_provider.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +9,9 @@ class TodoItemWidget extends ConsumerStatefulWidget {
   final TodoModel currentTodo;
   final int index;
   final VoidCallback onDelete;
-  final Function(String) onUpdate;
+  final void Function(String) onUpdate;
   final bool value;
-  final Function(bool) onChanged;
+  final void Function(bool) onChanged;
   const TodoItemWidget({
     super.key,
     required this.currentTodo,
@@ -27,20 +27,6 @@ class TodoItemWidget extends ConsumerStatefulWidget {
 }
 
 class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
-  late final TextEditingController _editController;
-
-  @override
-  void initState() {
-    super.initState();
-    _editController = TextEditingController(text: widget.currentTodo.name);
-  }
-
-  @override
-  void dispose() {
-    _editController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final asyncNotifier = ref.read(asyncTodoStateProvider.notifier);
@@ -49,60 +35,41 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
     return Dismissible(
       direction: DismissDirection.startToEnd,
       key: ValueKey(widget.currentTodo.id),
-      onDismissed: (_) async {
+      confirmDismiss: (direction) async {
+        // Silme işlemini önce yap, başarılı olursa dismiss et
         asyncNotifier.setLoading();
         try {
           await todoNotifier.deleteTodo(widget.currentTodo.id);
           asyncNotifier.setSuccess();
+          return true; // Dismiss onaylandı
         } catch (e) {
           asyncNotifier.setError('Todo silinirken bir hata oluştu');
+          return false; // Dismiss iptal edildi
         }
+      },
+      onDismissed: (_) {
+        // onDismissed sadece dismiss onaylandığında çağrılır
+        // Burada ek işlem yapmaya gerek yok
       },
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.getTodoItemBackground(widget.value),
           borderRadius: BorderRadius.circular(15),
         ),
-        margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         child: GestureDetector(
           onTap: () {
-            _editController.text = widget.currentTodo.name;
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text(AppStrings.editTodoTitle),
-                  content: TextField(controller: _editController),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text(AppStrings.cancel),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final text = _editController.text.trim();
-                        if (text.isNotEmpty) {
-                          asyncNotifier.setLoading();
-                          try {
-                            await todoNotifier.updateTodo(
-                              widget.currentTodo.id,
-                              text,
-                            );
-                            asyncNotifier.setSuccess();
-                            if (context.mounted) {
-                              Navigator.of(context).pop();
-                            }
-                          } catch (e) {
-                            asyncNotifier.setError(
-                              'Todo güncellenirken bir hata oluştu',
-                            );
-                          }
-                        }
-                      },
-                      child: const Text(AppStrings.save),
-                    ),
-                  ],
-                );
+            DialogService.showEditTodoDialog(
+              context,
+              initialText: widget.currentTodo.name,
+              onSave: (text) async {
+                asyncNotifier.setLoading();
+                try {
+                  await todoNotifier.updateTodo(widget.currentTodo.id, text);
+                  asyncNotifier.setSuccess();
+                } catch (e) {
+                  asyncNotifier.setError('Todo güncellenirken bir hata oluştu');
+                }
               },
             );
           },

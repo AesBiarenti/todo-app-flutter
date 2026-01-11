@@ -1,4 +1,4 @@
-import 'package:basic_todo_app/model/todo_state.dart';
+import 'package:basic_todo_app/core/models/todo_state.dart';
 import 'package:basic_todo_app/providers/todo_provider.dart';
 import 'package:basic_todo_app/widgets/filters_component.dart';
 import 'package:basic_todo_app/widgets/float_ac_button_widget.dart';

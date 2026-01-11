@@ -1,5 +1,5 @@
 import 'package:basic_todo_app/constants/app_strings.dart';
-import 'package:basic_todo_app/model/todo_state.dart';
+import 'package:basic_todo_app/core/models/todo_state.dart';
 import 'package:basic_todo_app/providers/todo_provider.dart';
 import 'package:basic_todo_app/widgets/todo_item_widget.dart';
 import 'package:flutter/material.dart';
