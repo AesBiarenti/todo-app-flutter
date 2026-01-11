@@ -1,3 +1,4 @@
+import 'package:basic_todo_app/constants/app_strings.dart';
 import 'package:basic_todo_app/providers/todo_provider.dart';
 import 'package:basic_todo_app/widgets/todo_item_widget.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class ListViewWidget extends ConsumerWidget {
     final todoNotifier = ref.read(todoProvider.notifier);
 
     if (todos.isEmpty) {
-      return const Center(child: Text("Henüz todo yok"));
+      return const Center(child: Text(AppStrings.noTodosYet));
     }
 
     return ListView.builder(

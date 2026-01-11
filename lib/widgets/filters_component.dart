@@ -1,3 +1,5 @@
+import 'package:basic_todo_app/constants/app_colors.dart';
+import 'package:basic_todo_app/constants/enum.dart';
 import 'package:basic_todo_app/providers/todo_provider.dart';
 import 'package:basic_todo_app/widgets/tooltip_widget.dart';
 import 'package:flutter/material.dart';
@@ -8,14 +10,6 @@ class FiltersComponent extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<FiltersComponent> createState() => _FiltersComponentState();
-}
-
-Color changeBackGround(TodoEnum todoEnum, TodoEnum currentFilter) {
-  return currentFilter == todoEnum ? Colors.deepPurple : Colors.grey;
-}
-
-Color changeTextColor(TodoEnum todoEnum, TodoEnum currentFilter) {
-  return currentFilter == todoEnum ? Colors.grey : Colors.deepPurple;
 }
 
 class _FiltersComponentState extends ConsumerState<FiltersComponent> {
@@ -30,24 +24,33 @@ class _FiltersComponentState extends ConsumerState<FiltersComponent> {
           onTap: () {
             ref.read(filteredTodoList.notifier).state = TodoEnum.all;
           },
-          backGroundColor: changeBackGround(TodoEnum.all, currentFilter),
-          textColor: changeTextColor(TodoEnum.all, currentFilter),
+          backGroundColor: AppColors.getFilterActiveBackground(
+            TodoEnum.all,
+            currentFilter,
+          ),
+          textColor: AppColors.getFilterActiveText(TodoEnum.all, currentFilter),
         ),
         ToolTipWidget(
           text: "Tamamlanmış",
           onTap: () {
             ref.read(filteredTodoList.notifier).state = TodoEnum.completed;
           },
-          backGroundColor: changeBackGround(TodoEnum.completed, currentFilter),
-          textColor: changeTextColor(TodoEnum.completed, currentFilter),
+          backGroundColor: AppColors.getFilterActiveBackground(
+            TodoEnum.completed,
+            currentFilter,
+          ),
+          textColor: AppColors.getFilterActiveText(TodoEnum.completed, currentFilter),
         ),
         ToolTipWidget(
           text: "Tamamlanmamış",
           onTap: () {
             ref.read(filteredTodoList.notifier).state = TodoEnum.active;
           },
-          backGroundColor: changeBackGround(TodoEnum.active, currentFilter),
-          textColor: changeTextColor(TodoEnum.active, currentFilter),
+            backGroundColor: AppColors.getFilterActiveBackground(
+            TodoEnum.active,
+            currentFilter,
+          ),
+          textColor: AppColors.getFilterActiveText(TodoEnum.active, currentFilter),
         ),
       ],
     );

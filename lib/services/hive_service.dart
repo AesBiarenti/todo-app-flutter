@@ -1,3 +1,4 @@
+import 'package:basic_todo_app/constants/app_strings.dart';
 import 'package:basic_todo_app/model/todo_model.dart';
 import 'package:hive_flutter/adapters.dart';
 
@@ -8,7 +9,7 @@ class HiveService {
 
   static Box<TodoModel> get box {
     if (_box == null || !_box!.isOpen) {
-      throw Exception("HiveServices henüz initilize edilmemiş");
+      throw Exception(AppStrings.hiveNotInitialized);
     }
     return _box!;
   }
@@ -23,11 +24,10 @@ class HiveService {
       _box = await Hive.openBox<TodoModel>(_todoModelBox);
       _isInitialized = true;
     } catch (e) {
-      throw Exception("Hive services initilized hatası + $e");
+      throw Exception("${AppStrings.hiveInitializationError} + $e");
     }
   }
 
-  //* Yampak zorunda değiliz opsiyoneldir uygulamayı kapatırken çalıştırız.
   static Future<void> close() async {
     if (_box != null && _box!.isOpen) {
       await _box!.close();

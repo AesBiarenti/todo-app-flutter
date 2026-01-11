@@ -1,3 +1,5 @@
+import 'package:basic_todo_app/constants/app_colors.dart';
+import 'package:basic_todo_app/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,19 +31,19 @@ class _FloatAcButtonWidgetState extends ConsumerState<FloatAcButtonWidget> {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       shape: CircleBorder(),
-      backgroundColor: Colors.grey.shade900,
-      child: Icon(Icons.add, color: Colors.deepPurple, size: 40),
+      backgroundColor: AppColors.backgroundDark,
+      child: Icon(Icons.add, color: AppColors.primary, size: 40),
       onPressed: () {
         showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("Todo"),
+              title: Text(AppStrings.addTodoTitle),
               content: TextField(controller: _controller, autofocus: true),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("İptal"),
+                  child: const Text(AppStrings.cancel),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -52,7 +54,7 @@ class _FloatAcButtonWidgetState extends ConsumerState<FloatAcButtonWidget> {
                       Navigator.of(context).pop();
                     }
                   },
-                  child: Text("Kaydet"),
+                  child: Text(AppStrings.save),
                 ),
               ],
             );

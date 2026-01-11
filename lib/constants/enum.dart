@@ -1,0 +1,1 @@
+enum TodoEnum { all, completed, active }

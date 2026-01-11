@@ -1,3 +1,4 @@
+import 'package:basic_todo_app/constants/enum.dart';
 import 'package:basic_todo_app/model/todo_model.dart';
 import 'package:basic_todo_app/services/hive_service.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:uuid/uuid.dart';
 
-enum TodoEnum { all, completed, active }
+
 
 //*
 final filteredTodoList = StateProvider<TodoEnum>((ref) => TodoEnum.all);

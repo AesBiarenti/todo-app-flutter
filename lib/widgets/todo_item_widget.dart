@@ -1,3 +1,5 @@
+import 'package:basic_todo_app/constants/app_colors.dart';
+import 'package:basic_todo_app/constants/app_strings.dart';
 import 'package:basic_todo_app/model/todo_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,7 +48,7 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
       onDismissed: (_) => widget.onDelete(),
       child: Container(
         decoration: BoxDecoration(
-          color: widget.value ? Colors.grey : Colors.deepPurple,
+          color: AppColors.getTodoItemBackground(widget.value),
           borderRadius: BorderRadius.circular(15),
         ),
         margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -57,7 +59,7 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: Text("Add Todo"),
+                  title: Text(AppStrings.editTodoTitle),
                   content: TextField(controller: _editController),
                   actions: [
                     ElevatedButton(
@@ -68,7 +70,7 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
                           Navigator.of(context).pop();
                         }
                       },
-                      child: const Text("Kaydet"),
+                      child: const Text(AppStrings.save),
                     ),
                   ],
                 );
@@ -81,7 +83,7 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
               widget.currentTodo.name,
               style: TextStyle(
                 decoration: widget.value ? TextDecoration.lineThrough : null,
-                color: widget.value ? Colors.grey.shade300 : null,
+                color: AppColors.getTodoItemTextColor(widget.value),
               ),
             ),
             subtitle: Text(widget.currentTodo.id),
