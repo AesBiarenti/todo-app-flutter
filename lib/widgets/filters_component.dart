@@ -10,19 +10,18 @@ class FiltersComponent extends ConsumerStatefulWidget {
   ConsumerState<FiltersComponent> createState() => _FiltersComponentState();
 }
 
-var currentFilter = TodoEnum.all;
-Color changeBackGround(TodoEnum todoEnum) {
+Color changeBackGround(TodoEnum todoEnum, TodoEnum currentFilter) {
   return currentFilter == todoEnum ? Colors.deepPurple : Colors.grey;
 }
 
-Color changeTextColor(TodoEnum todoEnum) {
+Color changeTextColor(TodoEnum todoEnum, TodoEnum currentFilter) {
   return currentFilter == todoEnum ? Colors.grey : Colors.deepPurple;
 }
 
 class _FiltersComponentState extends ConsumerState<FiltersComponent> {
   @override
   Widget build(BuildContext context) {
-    currentFilter = ref.watch(filteredTodoList);
+    final currentFilter = ref.watch(filteredTodoList);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -31,24 +30,24 @@ class _FiltersComponentState extends ConsumerState<FiltersComponent> {
           onTap: () {
             ref.read(filteredTodoList.notifier).state = TodoEnum.all;
           },
-          backGroundColor: changeBackGround(TodoEnum.all),
-          textColor: changeTextColor(TodoEnum.all),
+          backGroundColor: changeBackGround(TodoEnum.all, currentFilter),
+          textColor: changeTextColor(TodoEnum.all, currentFilter),
         ),
         ToolTipWidget(
           text: "Tamamlanmış",
           onTap: () {
             ref.read(filteredTodoList.notifier).state = TodoEnum.completed;
           },
-          backGroundColor: changeBackGround(TodoEnum.completed),
-          textColor: changeTextColor(TodoEnum.completed),
+          backGroundColor: changeBackGround(TodoEnum.completed, currentFilter),
+          textColor: changeTextColor(TodoEnum.completed, currentFilter),
         ),
         ToolTipWidget(
           text: "Tamamlanmamış",
           onTap: () {
             ref.read(filteredTodoList.notifier).state = TodoEnum.active;
           },
-          backGroundColor: changeBackGround(TodoEnum.active),
-          textColor: changeTextColor(TodoEnum.active),
+          backGroundColor: changeBackGround(TodoEnum.active, currentFilter),
+          textColor: changeTextColor(TodoEnum.active, currentFilter),
         ),
       ],
     );

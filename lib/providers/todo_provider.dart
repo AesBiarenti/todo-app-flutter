@@ -7,7 +7,9 @@ import 'package:uuid/uuid.dart';
 
 enum TodoEnum { all, completed, active }
 
+//*
 final filteredTodoList = StateProvider<TodoEnum>((ref) => TodoEnum.all);
+//*
 final filteredProvider = Provider<List<TodoModel>>((ref) {
   final filter = ref.watch(filteredTodoList);
   final todoList = ref.watch(todoProvider);
@@ -20,6 +22,7 @@ final filteredProvider = Provider<List<TodoModel>>((ref) {
       return todoList.where((test) => test.isCompleted).toList();
   }
 });
+
 final todoProvider = StateNotifierProvider<TodoProvider, List<TodoModel>>(
   (ref) => TodoProvider()..loadTodos(),
 );
