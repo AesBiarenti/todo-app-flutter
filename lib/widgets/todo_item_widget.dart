@@ -7,12 +7,16 @@ class TodoItemWidget extends ConsumerStatefulWidget {
   final int index;
   final VoidCallback onDelete;
   final Function(String) onUpdate;
+  final bool value;
+  final Function(bool) onChanged;
   const TodoItemWidget({
     super.key,
     required this.currentTodo,
     required this.index,
     required this.onDelete,
     required this.onUpdate,
+    required this.value,
+    required this.onChanged,
   });
 
   @override
@@ -39,10 +43,10 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
     return Dismissible(
       direction: DismissDirection.startToEnd,
       key: ValueKey(widget.currentTodo.id),
-      onDismissed: (_) => widget.onDelete,
+      onDismissed: (_) => widget.onDelete(),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.deepPurple,
+          color: widget.value ? Colors.grey : Colors.deepPurple,
           borderRadius: BorderRadius.circular(15),
         ),
         margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -73,8 +77,18 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
           },
           child: ListTile(
             leading: Text("${widget.index}"),
-            title: Text(widget.currentTodo.name),
+            title: Text(
+              widget.currentTodo.name,
+              style: TextStyle(
+                decoration: widget.value ? TextDecoration.lineThrough : null,
+                color: widget.value ? Colors.grey.shade300 : null,
+              ),
+            ),
             subtitle: Text(widget.currentTodo.id),
+            trailing: Checkbox(
+              value: widget.value,
+              onChanged: (value) => widget.onChanged(value ?? false),
+            ),
           ),
         ),
       ),

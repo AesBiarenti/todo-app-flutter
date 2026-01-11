@@ -8,14 +8,11 @@ class ListViewWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
     final todos = ref.watch(todoProvider);
     final todoNotifier = ref.read(todoProvider.notifier);
 
     if (todos.isEmpty) {
-      return const Center(
-        child: Text("Henüz todo yok"),
-      );
+      return const Center(child: Text("Henüz todo yok"));
     }
 
     return ListView.builder(
@@ -27,6 +24,8 @@ class ListViewWidget extends ConsumerWidget {
           index: index,
           onDelete: () => todoNotifier.deleteTodo(todo.id),
           onUpdate: (newName) => todoNotifier.updateTodo(todo.id, newName),
+          value: todo.isCompleted,
+          onChanged: (value) => todoNotifier.toggledTodo(todo.id),
         );
       },
     );

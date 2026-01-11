@@ -19,7 +19,7 @@ class TodoProvider extends StateNotifier<List<TodoModel>> {
   Future<void> addTodo(String name) async {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return;
-    final newTodo = TodoModel(id: _uuid.v4(), name: name);
+    final newTodo = TodoModel(id: _uuid.v4(), name: name, isCompleted: false);
     await HiveService.addTodo(newTodo);
     state = [...state, newTodo];
     debugPrint(state.length.toString());
@@ -33,11 +33,24 @@ class TodoProvider extends StateNotifier<List<TodoModel>> {
   Future<void> updateTodo(String id, String name) async {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return;
-    final updatedTodo = TodoModel(id: id, name: trimmed);
+    final existingTodo = state.firstWhere((test) => test.id == id);
+    final updatedTodo = existingTodo.copyWith(name: trimmed);
     await HiveService.updateTodo(updatedTodo);
     state = [
       for (final hedefTodo in state)
-        if (hedefTodo.id == id) hedefTodo.copyWith(name: name) else hedefTodo,
+        if (hedefTodo.id == id) updatedTodo else hedefTodo,
+    ];
+  }
+
+  Future<void> toggledTodo(String id) async {
+    final existingTodo = state.firstWhere((test) => test.id == id);
+    final updatedTodo = existingTodo.copyWith(
+      isCompleted: !existingTodo.isCompleted,
+    );
+    await HiveService.updateTodo(updatedTodo);
+    state = [
+      for (final hedefTodo in state)
+        if (hedefTodo.id == id) updatedTodo else hedefTodo,
     ];
   }
 }
