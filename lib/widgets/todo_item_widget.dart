@@ -1,6 +1,7 @@
 import 'package:basic_todo_app/constants/app_colors.dart';
 import 'package:basic_todo_app/constants/app_strings.dart';
 import 'package:basic_todo_app/model/todo_model.dart';
+import 'package:basic_todo_app/providers/todo_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -42,10 +43,21 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final asyncNotifier = ref.read(asyncTodoStateProvider.notifier);
+    final todoNotifier = ref.read(todoStateProvider.notifier);
+
     return Dismissible(
       direction: DismissDirection.startToEnd,
       key: ValueKey(widget.currentTodo.id),
-      onDismissed: (_) => widget.onDelete(),
+      onDismissed: (_) async {
+        asyncNotifier.setLoading();
+        try {
+          await todoNotifier.deleteTodo(widget.currentTodo.id);
+          asyncNotifier.setSuccess();
+        } catch (e) {
+          asyncNotifier.setError('Todo silinirken bir hata oluştu');
+        }
+      },
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.getTodoItemBackground(widget.value),
@@ -62,12 +74,29 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
                   title: Text(AppStrings.editTodoTitle),
                   content: TextField(controller: _editController),
                   actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text(AppStrings.cancel),
+                    ),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         final text = _editController.text.trim();
                         if (text.isNotEmpty) {
-                          widget.onUpdate(text);
-                          Navigator.of(context).pop();
+                          asyncNotifier.setLoading();
+                          try {
+                            await todoNotifier.updateTodo(
+                              widget.currentTodo.id,
+                              text,
+                            );
+                            asyncNotifier.setSuccess();
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          } catch (e) {
+                            asyncNotifier.setError(
+                              'Todo güncellenirken bir hata oluştu',
+                            );
+                          }
                         }
                       },
                       child: const Text(AppStrings.save),
@@ -89,7 +118,17 @@ class _TodoItemWidgetState extends ConsumerState<TodoItemWidget> {
             subtitle: Text(widget.currentTodo.id),
             trailing: Checkbox(
               value: widget.value,
-              onChanged: (value) => widget.onChanged(value ?? false),
+              onChanged: (value) async {
+                asyncNotifier.setLoading();
+                try {
+                  await todoNotifier.toggledTodo(widget.currentTodo.id);
+                  asyncNotifier.setSuccess();
+                } catch (e) {
+                  asyncNotifier.setError(
+                    'Todo durumu değiştirilirken bir hata oluştu',
+                  );
+                }
+              },
             ),
           ),
         ),
