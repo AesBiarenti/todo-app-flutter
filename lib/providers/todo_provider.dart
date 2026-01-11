@@ -1,7 +1,6 @@
 import 'package:basic_todo_app/model/todo_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
-
 import 'package:uuid/uuid.dart';
 
 final todoProvider = StateNotifierProvider<TodoProvider, List<TodoModel>>(
@@ -11,10 +10,12 @@ final todoProvider = StateNotifierProvider<TodoProvider, List<TodoModel>>(
 class TodoProvider extends StateNotifier<List<TodoModel>> {
   TodoProvider() : super([]);
   final _uuid = Uuid();
+
+  
   void addTodo(String name) {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return;
-    state = [...state, TodoModel(_uuid.v4(), name: trimmed)];
+    state = [...state, TodoModel(id: _uuid.v4(), name: trimmed)];
     debugPrint(state.length.toString());
   }
 
