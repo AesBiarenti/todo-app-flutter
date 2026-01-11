@@ -1,9 +1,25 @@
 import 'package:basic_todo_app/model/todo_model.dart';
 import 'package:basic_todo_app/services/hive_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:uuid/uuid.dart';
 
+enum TodoEnum { all, completed, active }
+
+final filteredTodoList = StateProvider<TodoEnum>((ref) => TodoEnum.all);
+final filteredProvider = Provider<List<TodoModel>>((ref) {
+  final filter = ref.watch(filteredTodoList);
+  final todoList = ref.watch(todoProvider);
+  switch (filter) {
+    case TodoEnum.all:
+      return todoList;
+    case TodoEnum.active:
+      return todoList.where((test) => !test.isCompleted).toList();
+    case TodoEnum.completed:
+      return todoList.where((test) => test.isCompleted).toList();
+  }
+});
 final todoProvider = StateNotifierProvider<TodoProvider, List<TodoModel>>(
   (ref) => TodoProvider()..loadTodos(),
 );

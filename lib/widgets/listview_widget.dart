@@ -8,7 +8,7 @@ class ListViewWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todos = ref.watch(todoProvider);
+    final todos = ref.watch(filteredProvider);
     final todoNotifier = ref.read(todoProvider.notifier);
 
     if (todos.isEmpty) {
